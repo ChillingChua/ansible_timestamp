@@ -1,0 +1,35 @@
+diff --git a/lib/ansible/utils/display.py b/lib/ansible/utils/display.py
+index 2f21646467..aa1d18cafa 100644
+--- a/lib/ansible/utils/display.py
++++ b/lib/ansible/utils/display.py
+@@ -30,6 +30,7 @@ import sys
+ import textwrap
+ import time
+ 
++from datetime import datetime as dt
+ from struct import unpack, pack
+ from termios import TIOCGWINSZ
+ 
+@@ -244,7 +245,7 @@ class Display:
+         if C.SYSTEM_WARNINGS:
+             self.warning(msg)
+ 
+-    def banner(self, msg, color=None, cows=True):
++    def banner(self, msg, color=None, cows=True, timestamps=True):
+         '''
+         Prints a header-looking line with cowsay or stars wit hlength depending on terminal width (3 minimum)
+         '''
+@@ -257,9 +258,13 @@ class Display:
+ 
+         msg = msg.strip()
+         star_len = self.columns - len(msg)
++        if timestamps:
++            star_len = star_len - 11
+         if star_len <= 3:
+             star_len = 3
+         stars = u"*" * star_len
++        if timestamps:
++            self.display(u"\n[%s] %s %s" % (dt.now().strftime('%H:%M:%S'), msg, stars), color=color)
+         self.display(u"\n%s %s" % (msg, stars), color=color)
+ 
+     def banner_cowsay(self, msg, color=None):
